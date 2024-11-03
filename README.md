@@ -9,8 +9,8 @@ This pipeline, built with [Nextflow](https://www.nextflow.io/), automates the an
 - [Pipeline Overview](#pipeline-overview)
 - [Parameters](#parameters)
 - [Usage](#usage)
-- [Outputs](#outputs)
-- [Citation](#citation)
+
+
 
 ---
 
