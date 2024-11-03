@@ -1,31 +1,77 @@
+# 16S rRNA Sequence Analysis Pipeline
 
-# QIIME2 Nextflow Pipeline
-
-This repository contains a Nextflow pipeline for processing 16S rRNA paired-end sequencing data using QIIME2. The workflow includes data import, quality control, denoising, taxonomy classification, and visualization steps.
+This pipeline, built with [Nextflow](https://www.nextflow.io/), automates the analysis of 16S rRNA sequencing data using [QIIME 2](https://qiime2.org/). It performs a sequence import, quality control, taxonomic classification, and visualizations.
 
 ## Table of Contents
-- [Installation](#installation)
+
 - [Requirements](#requirements)
-- [Usage](#usage)
-- [Pipeline Structure](#pipeline-structure)
+- [Installation](#installation)
+- [Pipeline Overview](#pipeline-overview)
 - [Parameters](#parameters)
-- [Output](#output)
-- [License](#license)
+- [Usage](#usage)
+- [Outputs](#outputs)
+- [Citation](#citation)
 
-## Installation
-
-1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html).
-2. Ensure [QIIME2](https://docs.qiime2.org) is installed and configured in your environment.
+---
 
 ## Requirements
 
-- Nextflow
-- QIIME2
-- A classifier trained on 16S rRNA sequences (e.g., Silva 138 99% classifier)
+- **Nextflow** (version 21.04 or later)
+- **Docker** or **Singularity** (for containerized execution)
+- **QIIME 2** (version 2024.5.0, pre-installed within containers)
+
+## Installation
+
+1. Clone this repository:
+    ```bash
+    git clone <repository-url>
+    cd <repository-name>
+    ```
+
+2. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html) by running:
+    ```bash
+    curl -s https://get.nextflow.io | bash
+    ```
+
+3. Make sure Docker or Singularity is installed for running the QIIME 2 containers.
+
+## Pipeline Overview
+
+The pipeline performs the following steps:
+
+1. **Import Casava-Formatted FASTQ**: Imports paired-end FASTQ files in the Casava format.
+2. **Demultiplexing Summary**: Generates a summary of the demultiplexed data for quality assessment.
+3. **DADA2 Denoising**: Removes noise, corrects sequencing errors, and generates feature tables.
+4. **Feature Table Summarization**: Provides summaries for the feature table.
+5. **Sequence Tabulation**: Lists all sequences found in the data.
+6. **Taxonomy Classification**: Assigns taxonomy using a pre-trained classifier.
+7. **Taxa Bar Plot**: Visualizes taxa composition across samples.
+
+## Parameters
+
+The parameters are set within the script or can be customized in the Nextflow command.
+
+| Parameter       | Description                                     | Default |
+|-----------------|-------------------------------------------------|---------|
+| `casava_folder` | Path to Casava-formatted FASTQ data folder.     | Required |
+| `metadata`      | Metadata file for samples                       | Required |
+| `classifier`    | Path to the QIIME 2 trained classifier (.qza)   | Required |
+| `trim_left_f`   | Bases to trim from the left of forward reads.   | 0       |
+| `trim_left_r`   | Bases to trim from the left of reverse reads.   | 0       |
+| `trunc_len_f`   | Length to truncate forward reads.               | 0       |
+| `trunc_len_r`   | Length to truncate reverse reads.               | 0       |
 
 ## Usage
 
-To run the pipeline, clone the repository and execute the following command:
+Run the pipeline using Nextflow as follows:
 
 ```bash
-nextflow run main.nf --input "/path/to/fastq_directory" --classifier "/path/to/classifier.qza" --metadata "/path/to/metadata.tsv" --trunc_len_f <forward_read_length> --trunc_len_r <reverse_read_length>
+nextflow run main.nf \
+    --casava_folder "/path/to/your/casava_folder" \
+    --metadata "/path/to/metadata.tsv" \
+    --classifier "/path/to/silva-138-99-nb-classifier.qza" \
+    --trim_left_f 0 \
+    --trim_left_r 0 \
+    --trunc_len_f 0 \
+    --trunc_len_r 0
+
